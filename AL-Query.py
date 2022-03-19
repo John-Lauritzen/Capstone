@@ -1,4 +1,7 @@
+class my_class(object):
+    pass
 
+# Here we define our query as a multi-line string
 query = '''
 query ($id: Int, $page: Int, $perPage: Int, $search: String) {
     Page (page: $page, perPage: $perPage) {
@@ -27,3 +30,6 @@ url = 'https://graphql.anilist.co'
 ​
 response = requests.post(url, json={'query': query, 'variables': variables})
 print(response)
+
+
+
