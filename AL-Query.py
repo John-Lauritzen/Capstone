@@ -1,21 +1,16 @@
-class my_class(object):
-    pass
+import requests
 
 # Here we define our query as a multi-line string
 query = '''
-query ($id: Int, $page: Int, $perPage: Int, $search: String) {
+query ($page: Int, $perPage: Int, $search: String, $type: MediaType) {
     Page (page: $page, perPage: $perPage) {
-        pageInfo {
-            total
-            currentPage
-            lastPage
-            hasNextPage
-            perPage
-        }
-        media (id: $id, search: $search) {
-            id
+        media (search: $search, type: $type) {
             title {
                 romaji
+            }
+            genres
+            tags {
+                name
             }
         }
     }
@@ -23,13 +18,14 @@ query ($id: Int, $page: Int, $perPage: Int, $search: String) {
 '''
 variables = {
     'search': 'Berserk',
+    'type': 'MANGA',
     'page': 1,
-    'perPage': 3
+    'perPage': 1
 }
 url = 'https://graphql.anilist.co'
-​
+
 response = requests.post(url, json={'query': query, 'variables': variables})
-print(response)
+print(response.json())
 
 
 
