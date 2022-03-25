@@ -76,6 +76,53 @@ def update_series_rating(conn, series):
     cur.execute(sql, series)
     conn.commit()
 
+def report_library(conn):
+    """
+    List all manga in library
+    :param conn: Connection object
+    :return: Library list
+    """
+    sql = ''' SELECT title, volume, rating FROM library'''
+    cur = conn.cursor()
+    cur.execute(sql)
+    library = cur.fetchall()
+
+    return library
+
+def get_seriesID(conn, series):
+    """
+    Get the ID of a recorded series
+    :param conn: Connection object
+    :param series: Title of series
+    :return: Series ID
+    """
+    sql = ''' SELECT id FROM library
+            WHERE title = ?'''
+    cur = conn.cursor()
+    cur.execute(sql, (series,))
+    seriesIDraw = cur.fetchall()
+    seriesID = seriesIDraw[0][0]
+
+    return int(seriesID)
+    
+def get_seriestags(conn, series):
+    """
+    Get the tags of a recorded series
+    :param conn: Connection object
+    :param series: ID of the series
+    :return: List of tags
+    """
+    sql = ''' SELECT tag FROM tags
+            WHERE id = ?'''
+    cur = conn.cursor()
+    cur.execute(sql, (series,))
+    tagsraw = cur.fetchall()
+    tags = list()
+    for tag in tagsraw:
+        tags.append(tag[0])
+        
+    return tags
+
 def clear_tags(conn, series):
     """
     Delete all tags for a series
