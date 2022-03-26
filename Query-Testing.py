@@ -1,8 +1,7 @@
-from contextlib import nullcontext
 import Query as Q
 import Database as DB
 
-LCtitle = Q.LCquery('9781648279331')
+'''LCtitle = Q.LCquery('9781648279331')
 print(LCtitle)
 MALresults = Q.MALquery(LCtitle)
 MALtitle = MALresults[0]
@@ -12,4 +11,10 @@ KIresults = Q.KIquery(MALtitle)
 ALresults = Q.ALquery(MALtitle)
 print(MALtags)
 print(KIresults)
-print(ALresults)
+print(ALresults)'''
+
+'''conn = DB.create_connection()
+
+print(DB.get_ownedseries(conn))'''
+
+print(Q.get_trending())

@@ -2,7 +2,9 @@ import sqlite3
 from sqlite3 import Error
 
 def create_connection():
-    """ create a database connection to the SQLite database """
+    """
+    create a database connection to the SQLite database
+    """
     conn = None
     try:
         conn = sqlite3.connect(r"mangalibrary.db")
@@ -13,10 +15,10 @@ def create_connection():
     return conn
 
 def create_table(conn, create_table_sql):
-    """ create a table from the create_table_sql statement
+    """
+    create a table from the create_table_sql statement
     :param conn: Connection object
     :param create_table_sql: a CREATE TABLE statement
-    :return:
     """
     try:
         c = conn.cursor()
@@ -82,7 +84,7 @@ def report_library(conn):
     :param conn: Connection object
     :return: Library list
     """
-    sql = ''' SELECT title, volume, rating FROM library'''
+    sql = ''' SELECT id, title, volume, rating FROM library'''
     cur = conn.cursor()
     cur.execute(sql)
     library = cur.fetchall()
@@ -122,6 +124,22 @@ def get_seriestags(conn, series):
         tags.append(tag[0])
         
     return tags
+
+def get_ownedseries(conn):
+    """ 
+    Get a list of all series owned in the library
+    :param conn: Connection object
+    :return: List of titles
+    """
+    sql = ''' SELECT title FROM library'''
+    cur = conn.cursor()
+    cur.execute(sql)
+    titlesraw = cur.fetchall()
+    titles = list()
+    for title in titlesraw:
+        titles.append(title[0])
+        
+    return titles
 
 def clear_tags(conn, series):
     """

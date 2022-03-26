@@ -1,10 +1,11 @@
-from asyncio.windows_events import NULL
 import requests
 import xml.etree.ElementTree as ET
 import json
 import string
+import Database as DB
 
 InvalidPunctuation = string.punctuation.replace('-','')
+MALheaders = {'X-MAL-CLIENT-ID': '8e63b628fd74b0bab02e703f52e79743'}
 
 def LCquery(ISBN):
     """
@@ -38,10 +39,9 @@ def MALquery(title):
     Cleantitle = str(title).translate(str.maketrans('', '', InvalidPunctuation))
     #MAL Query 1
     MALurl = 'https://api.myanimelist.net/v2/manga?q='+ Cleantitle
-    MALheaders = {'X-MAL-CLIENT-ID': '8e63b628fd74b0bab02e703f52e79743'}
     MALresponse1 = requests.get(MALurl, headers=MALheaders)
     #Get data
-    MALquery =MALresponse1.text
+    MALquery = MALresponse1.text
     #Convert data
     MALqueryresult = json.loads(MALquery)
     #Get first ID
@@ -161,3 +161,37 @@ def ALquery(MALtitle):
     for item in ALdata['data']['Page']['media'][0]['tags']:
         ALdatafinal.append(item['name'])
     return ALdatafinal
+
+def get_trending():
+    '''
+    Queries MAL for list of at least 20 trending manga that are not owned
+    :return: List of titles by popularity that are not owned
+    '''
+    Trending = list()
+    #Initial MAL URL
+    MALurl = 'https://api.myanimelist.net/v2/manga/ranking?ranking_type=bypopularity&limit=20'
+    while len(Trending) < 20:
+        #MAL Query
+        MALresponse1 = requests.get(MALurl, headers=MALheaders)
+        #Get data
+        MALquery = MALresponse1.text
+        #Convert data
+        MALqueryresult = json.loads(MALquery)
+        conn = DB.create_connection()
+        Owned = DB.get_ownedseries(conn)
+        for i in range(19):
+            #Get ID
+            MALID = str(MALqueryresult['data'][i]['node']['id'])
+            #Query media type of ID
+            MALlisturl = 'https://api.myanimelist.net/v2/manga/'+ MALID +'?fields=media_type'
+            MALlistresponse = requests.get(MALlisturl, headers=MALheaders)
+            #Get data
+            MALlistresult = json.loads(MALlistresponse.text)
+            #Check if ID is manga and unowned
+            if str(MALlistresult['media_type']) == 'manga' and str(MALlistresult['title']) not in Owned:
+                Trending.append(MALlistresult['title'])
+        MALurl = MALqueryresult['paging']['next']
+    
+    return Trending
+        
+
