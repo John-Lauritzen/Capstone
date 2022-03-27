@@ -1,12 +1,6 @@
 import Database as DB
 import Query as Q
 
-def tag_entry(conn, seriesid, tags):
-    for tag in tags:
-        CurTags = DB.get_seriestags(conn, seriesid)
-        if tag not in CurTags:
-            DB.enter_tag(conn, (seriesid, tag))
-
 def main():
     action = ''
     action = input('Enter ISBN (or done to finish):')
@@ -34,10 +28,10 @@ def main():
         Rating = int(input('Enter rating on a scale from 1-5:'))
         conn = DB.create_connection()
         SeriesID = DB.enter_series(conn, (MALtitle, Volume, Rating))
-        tag_entry(conn, SeriesID, MALtags)
+        DB.tag_entry(conn, SeriesID, MALtags)
         if KIresults != 0:
-            tag_entry(conn, SeriesID, KIresults)
-        tag_entry(conn, SeriesID, ALresults)
+            DB.tag_entry(conn, SeriesID, KIresults)
+        DB.tag_entry(conn, SeriesID, ALresults)
         main()
 
 

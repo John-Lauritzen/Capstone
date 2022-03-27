@@ -35,6 +35,8 @@ lsvc = svm.LinearSVC()
 #print('Linear SVC: ', cross_val_score(lsvc, VectorizedTags, LibraryRatings, scoring="accuracy", cv=cv))
 #print('Linear SVC V2: ', cross_val_score(lsvc, VectorizedTags2, LibraryRatings, scoring="accuracy", cv=cv))
 
+
+
 SampleTags = DB.get_seriestags(conn, 3)
 RC.train_fromlibrary()
 print(RC.predict_rating(SampleTags))

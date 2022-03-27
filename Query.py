@@ -155,12 +155,16 @@ def ALquery(MALtitle):
     ALresult = requests.post(ALurl, json={'query': ALquery, 'variables': ALvariables})
     #Store data
     ALdata = ALresult.json()
-    ALdatafinal = list()
-    for item in ALdata['data']['Page']['media'][0]['genres']:
-        ALdatafinal.append(item)
-    for item in ALdata['data']['Page']['media'][0]['tags']:
-        ALdatafinal.append(item['name'])
-    return ALdatafinal
+    #Check if data was returned
+    try:
+        ALdatafinal = list()
+        for item in ALdata['data']['Page']['media'][0]['genres']:
+            ALdatafinal.append(item)
+        for item in ALdata['data']['Page']['media'][0]['tags']:
+            ALdatafinal.append(item['name'])
+        return ALdatafinal
+    except:
+        return 0
 
 def get_trending():
     '''
