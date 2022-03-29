@@ -192,6 +192,22 @@ def get_ownedseries(conn):
 
     return titles
 
+def get_libraryids(conn):
+    '''
+    Get a list of all series IDs in the library
+    :param conn: Connection object
+    :return: List of IDs
+    '''
+    sql = '''SELECT id FROM library'''
+    cur = conn.cursor()
+    cur.execute(sql)
+    idsraw = cur.fetchall()
+    ids = list()
+    for id in idsraw:
+        ids.append(id[0])
+
+    return ids
+
 def clear_tags(conn, series):
     '''
     Delete all tags for a series

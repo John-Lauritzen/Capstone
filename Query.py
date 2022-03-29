@@ -45,7 +45,10 @@ def MALquery(title):
     #Convert data
     MALqueryresult = json.loads(MALquery)
     #Get first ID
-    MALtopID = str(MALqueryresult['data'][0]['node']['id'])
+    try:
+        MALtopID = str(MALqueryresult['data'][0]['node']['id'])
+    except:
+        return 0
     #Query media type of first ID
     MALtopurl = 'https://api.myanimelist.net/v2/manga/'+ MALtopID +'?fields=media_type'
     MALtopresponse = requests.get(MALtopurl, headers=MALheaders)

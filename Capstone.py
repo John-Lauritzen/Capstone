@@ -1,3 +1,4 @@
+import time as T
 import Database as DB
 import Query as Q
 import Recommendation as RC
@@ -18,9 +19,13 @@ def main():
     print('4. Update the rating for a series')
     print('5. Get recommendations based of of the library')
     print('6. Exit')
-    Menu = int(input('Please enter the number for an action: '))
+    try:
+        Menu = int(input('Please enter the number for an action: '))
+    except:
+        Menu = 0
     if Menu not in ValidMenu:
-        print('Please make a valid selection')
+        print('Please make a valid selection. Restarting.')
+        T.sleep(3)
         main()
     elif Menu == 1:
         Library = P.DataFrame(DB.report_library(conn), columns= LibraryHeaders)
@@ -37,16 +42,44 @@ def main():
     elif Menu == 2:
         data_entry(conn)
     elif Menu == 3:
-        id = input('Enter series ID:')
-        volume = input('Enter latest owned volume:')
-        DB.update_series_volume(conn, (volume, id))
-        print('Series updated.')
+        ValidIDs = DB.get_libraryids(conn)
+        try:
+            id = int(input('Enter series ID: '))
+        except:
+            id = 0
+        try:
+            volume = int(input('Enter latest owned volume: '))
+        except:
+            volume = 0
+        if id not in ValidIDs:
+            print('Invalid ID entered, restarting.')
+            T.sleep(3)
+        elif volume < 1:
+            print('Invalid volume entered, restarting.')
+            T.sleep(3)
+        else:
+            DB.update_series_volume(conn, (volume, id))
+            print('Series updated.')
         main()
     elif Menu == 4:
-        id = input('Enter series ID:')
-        rating = input('Enter the new rating:')
-        DB.update_series_rating(conn, (rating, id))
-        print('Series updated.')
+        ValidIDs = DB.get_libraryids(conn)
+        try:
+            id = int(input('Enter series ID: '))
+        except:
+            id = 0
+        try:
+            rating = int(input('Enter the new rating (1-5): '))
+        except:
+            rating = 0
+        if id not in ValidIDs:
+            print('Invalid ID entered, restarting.')
+            T.sleep(3)
+        elif rating < 1 or rating > 5:
+            print('Invalid rating entered, restarting.')
+            T.sleep(3)
+        else:
+            DB.update_series_rating(conn, (rating, id))
+            print('Series updated.')
         main()
     elif Menu == 5:
         Recommendations = RC.get_recommendations()
@@ -94,18 +127,22 @@ def data_entry(conn):
                 print('Invalid input, trying original title.')
                 ConfirmedTitle = LCtitle
         MALresults = Q.MALquery(ConfirmedTitle)
-        MALtitle = MALresults[0]
-        MALtags = MALresults[1:]
-        KIresults = Q.KIquery(MALtitle)
-        ALresults = Q.ALquery(ConfirmedTitle)
-        Volume = int(input('Enter latest owned volume number:'))
-        Rating = int(input('Enter rating on a scale from 1-5:'))
-        SeriesID = DB.enter_series(conn, (MALtitle, Volume, Rating))
-        DB.tag_entry(conn, SeriesID, MALtags)
-        if KIresults != 0:
-            DB.tag_entry(conn, SeriesID, KIresults)
-        DB.tag_entry(conn, SeriesID, ALresults)
-        data_entry(conn)
+        if MALresults == 0:
+            print('No results returned from MyAnimeList.net. Please try another title.')
+            data_entry(conn)
+        else:
+            MALtitle = MALresults[0]
+            MALtags = MALresults[1:]
+            KIresults = Q.KIquery(MALtitle)
+            ALresults = Q.ALquery(ConfirmedTitle)
+            Volume = int(input('Enter latest owned volume number:'))
+            Rating = int(input('Enter rating on a scale from 1-5:'))
+            SeriesID = DB.enter_series(conn, (MALtitle, Volume, Rating))
+            DB.tag_entry(conn, SeriesID, MALtags)
+            if KIresults != 0:
+                DB.tag_entry(conn, SeriesID, KIresults)
+            DB.tag_entry(conn, SeriesID, ALresults)
+            data_entry(conn)
     else:
         main()
         
