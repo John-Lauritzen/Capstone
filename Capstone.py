@@ -135,14 +135,29 @@ def data_entry(conn):
             MALtags = MALresults[1:]
             KIresults = Q.KIquery(MALtitle)
             ALresults = Q.ALquery(ConfirmedTitle)
-            Volume = int(input('Enter latest owned volume number:'))
-            Rating = int(input('Enter rating on a scale from 1-5:'))
-            SeriesID = DB.enter_series(conn, (MALtitle, Volume, Rating))
-            DB.tag_entry(conn, SeriesID, MALtags)
-            if KIresults != 0:
-                DB.tag_entry(conn, SeriesID, KIresults)
-            DB.tag_entry(conn, SeriesID, ALresults)
-            data_entry(conn)
+            try:
+                Volume = int(input('Enter latest owned volume number:'))
+            except:
+                Volume = 0
+            try:
+                Rating = int(input('Enter rating on a scale from 1-5:'))
+            except:
+                Rating = 0
+            if Volume == 0:
+                print('Invalid volume entered, restarting.')
+                T.sleep(3)
+                data_entry(conn)
+            elif Rating == 0 or Rating > 5:
+                print('Invalid rating entered, restarting.')
+                T.sleep(3)
+                data_entry(conn)                
+            else:
+                SeriesID = DB.enter_series(conn, (MALtitle, Volume, Rating))
+                DB.tag_entry(conn, SeriesID, MALtags)
+                if KIresults != 0:
+                    DB.tag_entry(conn, SeriesID, KIresults)
+                DB.tag_entry(conn, SeriesID, ALresults)
+                data_entry(conn)
     else:
         main()
         
