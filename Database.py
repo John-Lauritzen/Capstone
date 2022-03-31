@@ -3,15 +3,36 @@ from sqlite3 import Error
 
 def create_connection():
     '''
-    create a database connection to the SQLite database
+    create a database connection to the SQLite database and creates required tables if not present
     :return: Connection object
     '''
+    sql_create_library_table = '''CREATE TABLE IF NOT EXISTS library (
+                                    id integer PRIMARY KEY,
+                                    title text NOT NULL UNIQUE,
+                                    volume interger,
+                                    rating interger NOT NULL
+                                );'''
+
+    sql_create_tags_table = '''CREATE TABLE IF NOT EXISTS tags (
+                                id integer,
+                                tag text,
+                                PRIMARY KEY (id, tag)
+                                FOREIGN KEY (id) REFERENCES library (id)
+                            );'''
+
     conn = None
     try:
         conn = sqlite3.connect(r"mangalibrary.db")
     except Error as e:
         print(e)
     
+    # create tables
+    # create library table
+    create_table(conn, sql_create_library_table)
+        
+    # create tags table
+    create_table(conn, sql_create_tags_table)
+
     return conn
 
 def create_memory_connection():
@@ -270,38 +291,3 @@ def close_connection(conn):
     :param conn: Connection object
     '''
     conn.close        
-
-def main():
-
-    sql_create_library_table = '''CREATE TABLE IF NOT EXISTS library (
-                                    id integer PRIMARY KEY,
-                                    title text NOT NULL UNIQUE,
-                                    volume interger,
-                                    rating interger NOT NULL
-                                );'''
-
-    sql_create_tags_table = '''CREATE TABLE IF NOT EXISTS tags (
-                                id integer,
-                                tag text,
-                                PRIMARY KEY (id, tag)
-                                FOREIGN KEY (id) REFERENCES library (id)
-                            );'''
-
-    # create a database connection
-    conn = create_connection()
-
-    # create tables
-    if conn is not None:
-        # create library table
-        create_table(conn, sql_create_library_table)
-        
-        # create tags table
-        create_table(conn, sql_create_tags_table)
-
-    else:
-        print('Error! cannot create the database connection.')
-
-    conn.close
-
-if __name__ == '__main__':
-    main()
