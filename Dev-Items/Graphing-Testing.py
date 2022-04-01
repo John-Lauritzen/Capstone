@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import Recommendation as RC
 import Database as DB
 
@@ -23,9 +22,10 @@ plt.rcdefaults()
 plt.rcParams.update({'figure.autolayout': True})
 plt.style.use('seaborn-muted')
 fig, ax = plt.subplots()
-
+ax.barh(Titles10, Ratings10)
 labels = ax.get_yticklabels()
-plt.setp(labels, horizontalalignment='left')
+plt.setp(labels, horizontalalignment='left', position = (.03, 0))
+#print(plt.getp(labels))
 ax.set_xlabel('Probability')
 ax.set_title('Manga recommendations')
 

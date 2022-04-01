@@ -95,7 +95,7 @@ def main():
         fig, ax = plt.subplots()
         ax.barh(Titles, Probability)
         labels = ax.get_yticklabels()
-        plt.setp(labels, horizontalalignment='left')
+        plt.setp(labels, horizontalalignment='left', position = (.03, 0))
         ax.set_xlabel('Probability')
         ax.set_title('Manga recommendations')
         plt.show()
