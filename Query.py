@@ -5,7 +5,8 @@ import string
 import Database as DB
 
 InvalidPunctuation = string.punctuation.replace('-','')
-MALheaders = {'X-MAL-CLIENT-ID': '8e63b628fd74b0bab02e703f52e79743'}
+#MAL API key removed, needs to be replaced for code to work.
+MALheaders = {'X-MAL-CLIENT-ID': ''}
 
 def LCquery(ISBN):
     """
